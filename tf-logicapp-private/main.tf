@@ -91,7 +91,7 @@ resource "azurerm_storage_account" "storage" {
 
   allow_nested_items_to_be_public = false
 
-  public_network_access_enabled = false
+  public_network_access_enabled = true
   network_rules {
     default_action = "Deny"
     bypass         = ["AzureServices"]
