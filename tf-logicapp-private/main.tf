@@ -164,7 +164,7 @@ resource "azurerm_application_insights" "app_insights" {
   application_type    = "web"
 }
 
-### APP PLAN ###
+# ### APP PLAN ###
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/service_plan
 resource "azurerm_service_plan" "asp" {
   name                = var.app_plan_name
@@ -191,10 +191,6 @@ resource "azurerm_storage_share" "share" {
   storage_account_name = azurerm_storage_account.storage.name
   access_tier          = "TransactionOptimized"
   quota                = 5120
-
-  depends_on = [
-    azurerm_storage_account.storage
-  ]
 }
 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/logic_app_standard
@@ -203,7 +199,7 @@ resource "azurerm_logic_app_standard" "app" {
   location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
   app_service_plan_id        = azurerm_service_plan.asp.id
-  virtual_network_subnet_id = azurerm_subnet.snet_appplan.id
+  virtual_network_subnet_id  = azurerm_subnet.snet_appplan.id
 
   storage_account_name       = azurerm_storage_account.storage.name
   storage_account_access_key = azurerm_storage_account.storage.primary_access_key
@@ -216,6 +212,16 @@ resource "azurerm_logic_app_standard" "app" {
     FUNCTIONS_WORKER_RUNTIME     = "node"
     WEBSITE_NODE_DEFAULT_VERSION = "~18"
     WEBSITE_CONTENTOVERVNET      = "1"
+
+    APPINSIGHTS_INSTRUMENTATIONKEY        = azurerm_application_insights.app_insights.instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.app_insights.connection_string
+  }
+
+  site_config {
+    vnet_route_all_enabled           = true
+    dotnet_framework_version         = "v6.0"
+    use_32_bit_worker_process        = false
+    runtime_scale_monitoring_enabled = true
   }
 
   identity {
@@ -225,7 +231,7 @@ resource "azurerm_logic_app_standard" "app" {
 
 # Private DNS Zone for Logic App
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_dns_zone
-resource "azurerm_private_dns_zone" "dns_zone_func" {
+resource "azurerm_private_dns_zone" "dns_zone_logicapp" {
   name                = "privatelink.azurewebsites.net"
   resource_group_name = azurerm_resource_group.rg.name
 }
@@ -234,12 +240,12 @@ resource "azurerm_private_dns_zone" "dns_zone_func" {
 resource "azurerm_private_dns_zone_virtual_network_link" "dns_vnet_pe_storage" {
   name = "privatelink.azurewebsites.net-${azurerm_virtual_network.vnet.name}"
   resource_group_name = azurerm_resource_group.rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.dns_zone_func.name
+  private_dns_zone_name = azurerm_private_dns_zone.dns_zone_logicapp.name
   virtual_network_id = azurerm_virtual_network.vnet.id
 }
 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint
-resource "azurerm_private_endpoint" "pe_func" {
+resource "azurerm_private_endpoint" "pe_logicapp" {
   name = "pe-${azurerm_logic_app_standard.app.name}"
   location = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -248,7 +254,7 @@ resource "azurerm_private_endpoint" "pe_func" {
 
   private_dns_zone_group {
     name = "dns-pe-${azurerm_logic_app_standard.app.name}"
-    private_dns_zone_ids = [ azurerm_private_dns_zone.dns_zone_func.id ]
+    private_dns_zone_ids = [ azurerm_private_dns_zone.dns_zone_logicapp.id ]
   }
 
   private_service_connection {
@@ -333,4 +339,3 @@ resource "azurerm_virtual_machine_extension" "vm_jumpbox_aadlogin" {
   type                 = "AADSSHLoginForLinux"
   type_handler_version = "1.0"
 }
-

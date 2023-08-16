@@ -24,7 +24,7 @@ storage_account_name = "storlogicappcr1testtf2"
 
 # APP SERVICE PLAN
 app_plan_name = "asp-logicapp-cr1-test-tf2"
-app_plan_os_type = "Linux"
+app_plan_os_type = "Windows"
 app_plan_sku = "WS1"
 
 # APP INSIGHTS
