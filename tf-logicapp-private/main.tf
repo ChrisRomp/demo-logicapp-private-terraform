@@ -207,6 +207,7 @@ resource "azurerm_logic_app_standard" "app" {
 
   storage_account_name       = azurerm_storage_account.storage.name
   storage_account_access_key = azurerm_storage_account.storage.primary_access_key
+  storage_account_share_name = azurerm_storage_share.share.name
 
   version = "~4"
   https_only = true
@@ -215,8 +216,6 @@ resource "azurerm_logic_app_standard" "app" {
     FUNCTIONS_WORKER_RUNTIME     = "node"
     WEBSITE_NODE_DEFAULT_VERSION = "~18"
     WEBSITE_CONTENTOVERVNET      = "1"
-    WEBSITE_CONTENTSHARE = azurerm_storage_share.share.name
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING = azurerm_storage_account.storage.primary_connection_string
   }
 
   identity {
