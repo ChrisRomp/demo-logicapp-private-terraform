@@ -83,8 +83,3 @@ variable "logic_app_name" {
   type = string
   description = "Function App name"
 }
-
-variable "app_insights_name" {
-  type = string
-  description = "Application Insights name"
-}

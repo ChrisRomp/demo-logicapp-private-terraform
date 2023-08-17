@@ -27,8 +27,5 @@ app_plan_name = "asp-logicapp-cr1-test-tf2"
 app_plan_os_type = "Windows"
 app_plan_sku = "WS1"
 
-# APP INSIGHTS
-app_insights_name = "ai-logicapp-cr1-test-tf2"
-
 # LOGIC APP
 logic_app_name = "logicapp-cr1-test-tf2"

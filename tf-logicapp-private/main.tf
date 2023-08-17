@@ -146,24 +146,6 @@ module "pe_file" {
   subresource = "file"
 }
 
-### APPLICATION INSIGHTS ###
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace
-resource "azurerm_log_analytics_workspace" "workspace" {
-  name                = "log-analytics-${var.app_insights_name}"
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  sku                 = "PerGB2018"
-  retention_in_days   = 30
-}
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/application_insights
-resource "azurerm_application_insights" "app_insights" {
-  name                = var.app_insights_name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  workspace_id        = azurerm_log_analytics_workspace.workspace.id
-  application_type    = "web"
-}
-
 # ### APP PLAN ###
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/service_plan
 resource "azurerm_service_plan" "asp" {
@@ -212,9 +194,6 @@ resource "azurerm_logic_app_standard" "app" {
     FUNCTIONS_WORKER_RUNTIME     = "node"
     WEBSITE_NODE_DEFAULT_VERSION = "~18"
     WEBSITE_CONTENTOVERVNET      = "1"
-
-    APPINSIGHTS_INSTRUMENTATIONKEY        = azurerm_application_insights.app_insights.instrumentation_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = azurerm_application_insights.app_insights.connection_string
   }
 
   site_config {
