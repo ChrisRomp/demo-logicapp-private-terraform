@@ -13,3 +13,17 @@ Creates a simple Logic App (Consumption) workflow with no network restrictions.
 The workflow receives an HTTP POST request in JSON with a parameter of `name`, then responds with `"Hello", {name}"` in a JSON format.
 
 ![Screenshot](./images/screenshot-consumption.png)
+
+#### Testing
+
+Using cURL:
+
+```bash
+URL="" # Set to the `app_url` output value from Terraform
+NAME="World"
+curl -H "Content-Type: application/json" -X POST -d "{\"name\":\"$NAME\"}" $URL
+```
+
+Expected response:
+
+`{"response":"Hello, World"}`
