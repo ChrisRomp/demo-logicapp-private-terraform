@@ -310,7 +310,7 @@ resource "azurerm_linux_virtual_machine" "vm_jumpbox" {
 }
 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_machine_extension
-# Connect with az ssh vm --resource-group myResourceGroup --name myVM
+# Connect with az ssh vm --ip $IP_ADDRESS
 resource "azurerm_virtual_machine_extension" "vm_jumpbox_aadlogin" {
   name                 = "AADSSHLogin"
   virtual_machine_id   = azurerm_linux_virtual_machine.vm_jumpbox.id
