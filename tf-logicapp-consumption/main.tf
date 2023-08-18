@@ -18,12 +18,14 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/logic_app_workflow
 resource "azurerm_logic_app_workflow" "example" {
   name                = var.logic_app_name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 }
 
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/logic_app_trigger_http_request
 resource "azurerm_logic_app_trigger_http_request" "example" {
   name         = "trigger-http"
   logic_app_id = azurerm_logic_app_workflow.example.id
@@ -41,6 +43,7 @@ SCHEMA
 
 }
 
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/logic_app_action_custom
 resource "azurerm_logic_app_action_custom" "example" {
   name         = "Response - Say Hello"
   logic_app_id = azurerm_logic_app_workflow.example.id
