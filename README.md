@@ -1,4 +1,4 @@
-# demo-logicapp-private-terraform
+# demo-logicapp-terraform
 
 This project includes two Terraform templates for [Azure Logic Apps](https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview):
 
